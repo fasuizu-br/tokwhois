@@ -1,0 +1,69 @@
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[project]
+name = "tokwhois"
+version = "0.1.0"
+description = "Whois for stealth LLMs: fingerprint tokenizer families via prompt token fertility vectors."
+readme = "README.md"
+requires-python = ">=3.10"
+license = "Apache-2.0"
+authors = [
+    { name = "Fabio Suizu / Brainiall" }
+]
+keywords = ["llm", "tokenizer", "fingerprint", "openai-api", "bpe", "metrology"]
+classifiers = [
+    "Development Status :: 4 - Beta",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: Apache Software License",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.10",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Programming Language :: Python :: 3.14",
+    "Topic :: Scientific/Engineering :: Artificial Intelligence",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+dependencies = [
+    "httpx>=0.24.0",
+]
+
+[project.urls]
+Homepage = "https://github.com/fasuizu-br/tokwhois"
+Repository = "https://github.com/fasuizu-br/tokwhois"
+Issues = "https://github.com/fasuizu-br/tokwhois/issues"
+Documentation = "https://github.com/fasuizu-br/tokwhois#readme"
+
+[project.optional-dependencies]
+build-catalog = [
+    "tiktoken>=0.7.0",
+    "tokenizers>=0.19.0",
+]
+test = [
+    "pytest>=7.0.0",
+]
+
+[project.scripts]
+tokwhois = "tokwhois.cli:main"
+
+[tool.hatch.build.targets.wheel]
+packages = ["src/tokwhois"]
+
+[tool.hatch.build.targets.sdist]
+include = [
+    "/src",
+    "/catalog",
+    "/example",
+    "/tests",
+    "/docs",
+    "/README.md",
+    "/LICENSE",
+    "/NOTICE",
+]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]

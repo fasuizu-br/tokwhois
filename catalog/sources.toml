@@ -1,0 +1,134 @@
+# Public Tokenizer Catalog - Sources and Provenance
+# All entries are derived strictly from publicly available tokenizer artifacts
+# under open / permissive licenses. Pinned by commit hash / encoding spec.
+
+version = "v1"
+date = "2026-08-24"
+
+[families.o200k_base]
+display_name = "OpenAI o200k (GPT-4o / o1 / o3)"
+backend = "tiktoken"
+target = "o200k_base"
+source_url = "https://github.com/openai/tiktoken"
+license = "MIT"
+vocab_size = 200019
+
+[families.cl100k_base]
+display_name = "OpenAI cl100k (GPT-4 / GPT-3.5-Turbo)"
+backend = "tiktoken"
+target = "cl100k_base"
+source_url = "https://github.com/openai/tiktoken"
+license = "MIT"
+vocab_size = 100277
+
+[families.p50k_base]
+display_name = "OpenAI p50k (Codex / Davinci-002)"
+backend = "tiktoken"
+target = "p50k_base"
+source_url = "https://github.com/openai/tiktoken"
+license = "MIT"
+vocab_size = 50281
+
+[families.r50k_base]
+display_name = "OpenAI r50k (GPT-2 / GPT-3 / Davinci-001)"
+backend = "tiktoken"
+target = "r50k_base"
+source_url = "https://github.com/openai/tiktoken"
+license = "MIT"
+vocab_size = 50257
+
+[families.llama3]
+display_name = "Meta Llama 3 / 3.1 / 3.2 / 3.3 (128k)"
+backend = "hf"
+target = "unsloth/llama-3-8b"
+source_url = "https://huggingface.co/meta-llama/Meta-Llama-3-8B"
+license = "Llama 3 Community License"
+vocab_size = 128256
+
+[families.llama2]
+display_name = "Meta Llama 2 / CodeLlama (32k)"
+backend = "hf"
+target = "huggyllama/llama-7b"
+source_url = "https://huggingface.co/meta-llama/Llama-2-7b-hf"
+license = "Llama 2 Community License"
+vocab_size = 32000
+
+[families.qwen2_5]
+display_name = "Alibaba Qwen 2 / 2.5 (151k)"
+backend = "hf"
+target = "Qwen/Qwen2.5-7B"
+source_url = "https://huggingface.co/Qwen/Qwen2.5-7B"
+license = "Apache-2.0"
+vocab_size = 151665
+
+[families.glm4]
+display_name = "Zhipu GLM-4 (151k)"
+backend = "hf"
+target = "THUDM/glm-4-9b-hf"
+source_url = "https://huggingface.co/THUDM/glm-4-9b"
+license = "Apache-2.0"
+vocab_size = 151343
+
+[families.gemma]
+display_name = "Google Gemma 1 / Gemma 2 (256k)"
+backend = "hf"
+target = "unsloth/gemma-2-9b"
+source_url = "https://huggingface.co/google/gemma-2-9b"
+license = "Gemma Terms of Use"
+vocab_size = 256000
+
+[families.deepseek_v2]
+display_name = "DeepSeek V2 (100k)"
+backend = "hf"
+target = "deepseek-ai/DeepSeek-V2-Lite"
+source_url = "https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite"
+license = "DeepSeek License"
+vocab_size = 100002
+
+[families.deepseek_v3]
+display_name = "DeepSeek V3 / R1 (128k)"
+backend = "hf"
+target = "deepseek-ai/DeepSeek-V3"
+source_url = "https://huggingface.co/deepseek-ai/DeepSeek-V3"
+license = "MIT"
+vocab_size = 128815
+
+[families.mistral_v3]
+display_name = "Mistral v0.3 / Tekken (32k)"
+backend = "hf"
+target = "mistralai/Mistral-7B-v0.3"
+source_url = "https://huggingface.co/mistralai/Mistral-7B-v0.3"
+license = "Apache-2.0"
+vocab_size = 32768
+
+[families.yi]
+display_name = "01-ai Yi 1.0 / 1.5 (64k)"
+backend = "hf"
+target = "01-ai/Yi-1.5-9B"
+source_url = "https://huggingface.co/01-ai/Yi-1.5-9B"
+license = "Apache-2.0"
+vocab_size = 63992
+
+[families.phi3]
+display_name = "Microsoft Phi-3 / 3.5 (32k)"
+backend = "hf"
+target = "microsoft/Phi-3-mini-4k-instruct"
+source_url = "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct"
+license = "MIT"
+vocab_size = 32011
+
+[families.internlm2]
+display_name = "Shanghai AI Lab InternLM 2 / 2.5 (92k)"
+backend = "hf"
+target = "internlm/internlm2_5-7b"
+source_url = "https://huggingface.co/internlm/internlm2_5-7b"
+license = "Apache-2.0"
+vocab_size = 92544
+
+[families.starcoder2]
+display_name = "BigCode StarCoder 2 (49k)"
+backend = "hf"
+target = "bigcode/starcoder2-15b"
+source_url = "https://huggingface.co/bigcode/starcoder2-15b"
+license = "BigCode OpenRAIL-M"
+vocab_size = 49152
