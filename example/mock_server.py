@@ -13,7 +13,7 @@ from tokwhois.probes import EMBEDDED_PROBES
 class MockOpenAIHandler(BaseHTTPRequestHandler):
     target_family: str = "glm4"
     framing_offset: int = 7
-    server_mode: str = "normal"  # normal | no_usage | no_prompt_tokens | implausible | http_500 | disallow_empty
+    server_mode: str = "normal"  # normal | no_usage | no_prompt_tokens | implausible | http_500 | disallow_empty | inflated_empty
 
     def log_message(self, format, *args):
         # Quiet standard logging
@@ -80,6 +80,8 @@ class MockOpenAIHandler(BaseHTTPRequestHandler):
 
         # Add template framing overhead
         total_prompt_tokens = matched_count + self.framing_offset
+        if self.server_mode == "inflated_empty" and user_content == "":
+            total_prompt_tokens = 1000
 
         if self.server_mode == "implausible":
             total_prompt_tokens = 999999

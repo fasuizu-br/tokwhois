@@ -20,13 +20,19 @@ $$\text{Prompt}_{\text{server}}(s_i) = \text{Template}(s_i)$$
 
 The server reports billing via `usage.prompt_tokens`:
 
-$$n_i = |f(\text{Template}(s_i))| = |f(s_i)| + n_\varnothing$$
+$$n_i = |f(\text{Template}(s_i))|$$
 
-where $n_\varnothing = |f(\text{Template}(\varepsilon))|$ is the constant chat-template framing overhead for an empty message $\varepsilon$.
+A convenient first-order model is the **working hypothesis**
 
-`tokwhois` probes the empty prompt $\varepsilon$ (or minimal atomic prompt) to observe $n_\varnothing$. The calibrated fertility count for probe $s_i$ is then computed as:
+$$n_i \;\stackrel{?}{=}\; |f(s_i)| + n_\varnothing$$
 
-$$\hat{n}_i = \max(1, n_i - n_\varnothing)$$
+where $n_\varnothing = |f(\text{Template}(\varepsilon))|$ is the chat-template framing overhead for an empty message $\varepsilon$. This is **not an identity**. BPE is not additive under concatenation. $\text{Template}(s)$ is not $\text{Template}(\varepsilon)$ concatenated with $s$. Merges can cross the role-marker boundary. The catalog is built with $\mathrm{encode}(s)$ (no template). The live path measures $|f(\text{Template}(s))| - |f(\text{Template}(\varepsilon))|$. Comparing those two vectors is the instrument's hypothesis.
+
+`tokwhois` probes the empty prompt $\varepsilon$ to observe $n_\varnothing$. The calibrated fertility count for probe $s_i$ is:
+
+$$\hat{n}_i = n_i - n_\varnothing$$
+
+If the empty probe fails, the client aborts. If $\hat{n}_i < 1$, the client aborts. There is no floor at 1 and no substitution of `"."` for $\varepsilon$.
 
 ### 2.2 Fertility Vector
 
@@ -36,7 +42,7 @@ $$\mathbf{v} = (\hat{n}_1, \hat{n}_2, \ldots, \hat{n}_{14}) \in \mathbb{N}^{14}$
 
 ### 2.3 Catalog Matching via Manhattan ($L_1$) Distance
 
-Let $\mathcal{C} = \{(\mathbf{v}^{(k)}, \text{meta}^{(k)})\}_{k=1}^K$ be the catalog of $K$ public tokenizers (e.g. `o200k_base`, `cl100k_base`, `llama3`, `qwen2_5`, `glm4`, etc.) evaluated offline against $\mathcal{S}$.
+Let $\mathcal{C} = \{(\mathbf{v}^{(k)}, \text{meta}^{(k)})\}_{k=1}^K$ be the catalog of $K$ public tokenizers evaluated offline against $\mathcal{S}$. Catalog v1 has $K=16$ families (e.g. `o200k_base`, `cl100k_base`, `llama3`, `qwen2_5`, `glm4`). `qwen2_5` is Qwen 2 / 2.5; it is not Qwen3.
 
 The candidate ranking is ordered by Manhattan ($L_1$) distance:
 
@@ -70,8 +76,10 @@ When ambiguous, `tokwhois` refuses to guess a single lab or family, outputting t
 - If the `usage` object is missing from the API response, abort with `instrument: no usage field in response`.
 - If `usage.prompt_tokens` is missing or not an integer, abort with `instrument: no usage.prompt_tokens in response`.
 - If $n_i \le 0$ or $n_i > |s_i| + 1000$, abort with `instrument: implausible count`.
+- If the empty probe fails, abort. Do not substitute `"."`.
+- If $n_i - n_\varnothing < 1$, abort with `instrument: calibrated count < 1`. Do not floor at 1.
 
-Zero silent fallbacks. Zero synthetic smoothing.
+Zero silent fallbacks. Zero synthetic smoothing. The `confidence` field in the report is a heuristic function of $L_1$ and margin, not a probability.
 
 ---
 

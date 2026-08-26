@@ -84,11 +84,17 @@ def test_client_failclosed_server_error_500(mock_server):
         client.probe()
 
 
-def test_client_dot_fallback_on_empty_disallowed(mock_server):
+def test_client_failclosed_on_empty_disallowed(mock_server):
     MockOpenAIHandler.server_mode = "disallow_empty"
     client = ProbeClient(base_url=mock_server, model="test-model")
 
-    data = client.probe()
-    assert "calibrated_vector" in data
-    assert data["offset"] == 7
-    assert data["calibrated_vector"]["cjk30"] == 22
+    with pytest.raises(ProbeClientError, match="empty probe failed"):
+        client.probe()
+
+
+def test_client_failclosed_calibrated_count_below_one(mock_server):
+    MockOpenAIHandler.server_mode = "inflated_empty"
+    client = ProbeClient(base_url=mock_server, model="test-model")
+
+    with pytest.raises(ProbeClientError, match="calibrated count < 1"):
+        client.probe()

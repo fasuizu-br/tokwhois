@@ -38,6 +38,7 @@ class MatchResult:
             "display_name": self.top_match.display_name,
             "l1_distance": self.top_match.l1_distance,
             "confidence": round(self.confidence, 4),
+            "confidence_kind": "heuristic",
             "is_ambiguous": self.is_ambiguous,
             "margin": self.margin,
             "runner_up": (

@@ -79,7 +79,9 @@ def run_selftest(custom_catalog: Optional[Dict[str, Any]] = None, verbose: bool 
     sample_vec = families[sample_fam]["vector"]
     mock_offset = 12
     framed_vec = {k: v + mock_offset for k, v in sample_vec.items()}
-    calibrated_vec = {k: max(1, v - mock_offset) for k, v in framed_vec.items()}
+    calibrated_vec = {k: v - mock_offset for k, v in framed_vec.items()}
+    if any(v < 1 for v in calibrated_vec.values()):
+        errors.append("Offset subtraction produced calibrated count < 1.")
     offset_match = match_vector(calibrated_vec, catalog=catalog, offset=mock_offset)
 
     if offset_match.top_match.family_id != sample_fam or offset_match.top_match.l1_distance != 0:

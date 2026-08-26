@@ -39,7 +39,7 @@ def format_cli_report(result: MatchResult, top_n_compare: int = 4) -> str:
     if result.is_ambiguous:
         lines.append(f"{BOLD}family{RESET}      {AMBER}{top.family_id}-class{RESET}  {RED}[AMBIGUOUS: margin < 2]{RESET}")
     else:
-        lines.append(f"{BOLD}family{RESET}      {GREEN}{BOLD}{top.family_id}-class{RESET}     {DIM}confidence{RESET} {conf_color}{result.confidence:.2f}{RESET}  {DIM}(L1 distance: {top.l1_distance}){RESET}")
+        lines.append(f"{BOLD}family{RESET}      {GREEN}{BOLD}{top.family_id}-class{RESET}     {DIM}confidence (heuristic){RESET} {conf_color}{result.confidence:.2f}{RESET}  {DIM}(L1 distance: {top.l1_distance}){RESET}")
 
     if result.runner_up:
         lines.append(f"{BOLD}runner-up{RESET}   {BLUE}{result.runner_up.family_id}-class{RESET}    {DIM}margin{RESET} {result.margin} tokens (L1)")

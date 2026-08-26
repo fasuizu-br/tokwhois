@@ -6,12 +6,20 @@ Labs can hide the weights, the logits, and the architecture.
 They cannot hide the tokenizer they bill you with.
 
 ```bash
-uvx tokwhois demo
-uvx tokwhois https://api.example.com/v1 --model stealth-7
+git clone {{REPO_URL}}
+cd tokwhois
+pip install -e .
+python3 -m tokwhois demo
+```
+
+Zero-install, from the git URL (the package is not on PyPI):
+
+```bash
+uvx --from git+{{REPO_URL}} tokwhois demo
+uvx --from git+{{REPO_URL}} tokwhois https://api.example.com/v1 --model gpt-4o-mini
 ```
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
-[![PyPI](https://img.shields.io/pypi/v/tokwhois)](https://pypi.org/project/tokwhois/)
 
 ![demo](docs/demo.gif)
 
@@ -23,12 +31,13 @@ A 14-integer **fertility vector**. Each probe is a fixed, versioned string. The
 server returns `usage.prompt_tokens` for a 1-token completion. That
 integer is compared to a catalog of **public** tokenizers
 (tiktoken encodings + Hugging Face `tokenizer.json`, licenses
-permissive, pinned by commit/version).
+permissive, pinned by commit/version). Catalog v1 is **16 families**;
+Qwen 2/2.5 is not Qwen3.
 
 ```
-$ tokwhois https://api.example.com/v1 --model stealth-7
+$ python3 -m tokwhois demo
 
-family      glm4-class     confidence 1.00  (L1 distance: 0)
+family      glm4-class     confidence (heuristic) 1.00  (L1 distance: 0)
 runner-up   cl100k_base    margin 35 tokens (L1)
 
 probe          counted       glm4 cl100k_bas  internlm2 o200k_base
@@ -55,7 +64,9 @@ discriminating probes vs runner-up: cjk30, digit64, cjk_en, gmask
 
 It reports a **tokenizer family**, not a checkpoint, not a lab, not
 a parameter count. If the top two families land inside the margin,
-it prints `ambiguous` and stops. It does not guess.
+it prints `ambiguous` and stops. It does not guess. `confidence` in
+the output is a **heuristic** score of L1 distance and margin, not a
+probability.
 
 ---
 
@@ -67,11 +78,15 @@ it prints `ambiguous` and stops. It does not guess.
 
 ## Install
 
+The package is not on PyPI. Install from the repository:
+
 ```bash
-pip install tokwhois
+git clone {{REPO_URL}}
+cd tokwhois
+pip install -e .
 
 # or, zero install:
-uvx tokwhois demo
+uvx --from git+{{REPO_URL}} tokwhois demo
 ```
 
 Python 3.10+. The demo and selftest run **offline** (stdlib + the embedded catalog).
@@ -85,7 +100,7 @@ and only used to rebuild the catalog or encode local files.
 ### 1. Offline (no API key, no network)
 
 ```bash
-tokwhois demo
+python3 -m tokwhois demo
 ```
 
 This encodes the v1 probes against the embedded catalog, prints the vectors, and asserts
@@ -97,24 +112,27 @@ selftest is written to fail on purpose when the catalog collides.
 
 ```bash
 export OPENAI_API_KEY=...
-tokwhois "$OPENAI_BASE_URL" --model "$MODEL"
+python3 -m tokwhois "$OPENAI_BASE_URL" --model "$MODEL"
 ```
 
 Fourteen `max_tokens=1` calls. Fail-closed if `usage.prompt_tokens`
 is missing. Chat-template framing overhead is subtracted via an empty probe
-so the live vector is directly comparable to the local catalog.
+so the live vector can be compared to the local catalog. That comparison
+is a working hypothesis (BPE is not addition; see [METHOD.md](docs/METHOD.md)).
+If the empty probe fails, or a calibrated count is less than 1, the
+client aborts. There is no silent fallback.
 
 ### 3. Local file (you already have `tokenizer.json`)
 
 ```bash
-tokwhois --local path/to/tokenizer.json
+python3 -m tokwhois --local path/to/tokenizer.json
 ```
 
 ### 4. Machine-readable JSON output
 
 ```bash
-tokwhois demo --json
-tokwhois "$OPENAI_BASE_URL" --model "$MODEL" --json
+python3 -m tokwhois demo --json
+python3 -m tokwhois "$OPENAI_BASE_URL" --model "$MODEL" --json
 ```
 
 ---
@@ -127,7 +145,9 @@ research project, not a wrap. Billing requires `usage`. The
 combination is a fingerprint the server computes for you.
 
 This is not a watermark, not a logit attack, and not stylometry.
-It is addition.
+The empty-prompt offset is a first-order correction, not an identity.
+BPE is not addition; a chat template is not concatenation. See
+[METHOD.md](docs/METHOD.md).
 
 ---
 
@@ -139,18 +159,17 @@ It is addition.
 - **Not** a request that anyone violate a provider's terms. You run
   it against endpoints **you** are authorized to call.
 
-Sightings of unnamed stealth endpoints belong in discussions as
-**vectors**, not as accusations. The catalog only contains public
-tokenizers.
-
 ---
 
 ## Method in one paragraph
 
 Let $f$ be the unknown tokenizer. For a fixed probe set
-$s_1,\ldots,s_{14}$ we observe $n_i = |f(s_i)|$ via the
+$s_1,\ldots,s_{14}$ we observe $n_i = |f(\mathrm{Template}(s_i))|$ via the
 billing field, minus the chat-template offset $n_\varnothing$.
-The catalog stores $n_i^{(k)}$ for each public tokenizer $k$.
+That difference is a **working hypothesis** for $|f(s_i)|$, not an
+identity: BPE merges can cross the template boundary, and the catalog
+is built with `encode(s)` (no template). The catalog stores
+$n_i^{(k)}$ for each public tokenizer $k$.
 The report is $\arg\min_k \sum_i |n_i - n_i^{(k)}|$, with
 `ambiguous` if the runner-up is within `margin` (default 2).
 Every number in the report is an integer count with $n=1, K=1$.

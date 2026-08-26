@@ -123,10 +123,10 @@ class ProbeClient:
             # 1. Probe empty prompt to measure template overhead
             try:
                 empty_count, empty_lat = self._probe_single(client, "", "empty")
-            except ProbeClientError:
-                # Some servers disallow empty string, fallback to single dot "."
-                dot_count, empty_lat = self._probe_single(client, ".", "empty_dot")
-                empty_count = max(0, dot_count - 1)
+            except ProbeClientError as exc:
+                raise ProbeClientError(
+                    f"instrument: empty probe failed (no silent fallback): {exc}"
+                ) from exc
 
             offset = empty_count
             latencies["empty"] = empty_lat
@@ -139,8 +139,12 @@ class ProbeClient:
                 raw_counts[p_id] = raw_cnt
                 latencies[p_id] = lat
 
-                # Subtract chat template overhead
-                calibrated_cnt = max(1, raw_cnt - offset)
+                calibrated_cnt = raw_cnt - offset
+                if calibrated_cnt < 1:
+                    raise ProbeClientError(
+                        f"instrument: calibrated count < 1 "
+                        f"(raw={raw_cnt}, offset={offset}, probe={p_id})"
+                    )
                 calibrated_vector[p_id] = calibrated_cnt
 
                 if progress_callback is not None:

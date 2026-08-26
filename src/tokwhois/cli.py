@@ -1,6 +1,7 @@
 """Command line interface for tokwhois."""
 
 import argparse
+import json
 import os
 import sys
 import time
@@ -33,8 +34,10 @@ def run_demo(json_output: bool = False) -> int:
     mock_offset = 7
     framed_vector = {k: v + mock_offset for k, v in sample_vec.items()}
     
-    # Live calibration: subtract offset
-    calibrated_vector = {k: max(1, v - mock_offset) for k, v in framed_vector.items()}
+    calibrated_vector = {k: v - mock_offset for k, v in framed_vector.items()}
+    if any(v < 1 for v in calibrated_vector.values()):
+        print("instrument: calibrated count < 1 in demo offset subtraction", file=sys.stderr)
+        return 2
     result = match_vector(calibrated_vector, catalog=catalog, offset=mock_offset)
 
     if json_output:
