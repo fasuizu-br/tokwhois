@@ -6,7 +6,7 @@ Labs can hide the weights, the logits, and the architecture.
 They cannot hide the tokenizer they bill you with.
 
 ```bash
-git clone {{REPO_URL}}
+git clone https://github.com/fasuizu-br/tokwhois
 cd tokwhois
 pip install -e .
 python3 -m tokwhois demo
@@ -15,8 +15,8 @@ python3 -m tokwhois demo
 Zero-install, from the git URL (the package is not on PyPI):
 
 ```bash
-uvx --from git+{{REPO_URL}} tokwhois demo
-uvx --from git+{{REPO_URL}} tokwhois https://api.example.com/v1 --model gpt-4o-mini
+uvx --from git+https://github.com/fasuizu-br/tokwhois tokwhois demo
+uvx --from git+https://github.com/fasuizu-br/tokwhois tokwhois https://api.example.com/v1 --model gpt-4o-mini
 ```
 
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
@@ -81,12 +81,12 @@ probability.
 The package is not on PyPI. Install from the repository:
 
 ```bash
-git clone {{REPO_URL}}
+git clone https://github.com/fasuizu-br/tokwhois
 cd tokwhois
 pip install -e .
 
 # or, zero install:
-uvx --from git+{{REPO_URL}} tokwhois demo
+uvx --from git+https://github.com/fasuizu-br/tokwhois tokwhois demo
 ```
 
 Python 3.10+. The demo and selftest run **offline** (stdlib + the embedded catalog).
