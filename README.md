@@ -31,35 +31,35 @@ A 14-integer **fertility vector**. Each probe is a fixed, versioned string. The
 server returns `usage.prompt_tokens` for a 1-token completion. That
 integer is compared to a catalog of **public** tokenizers
 (tiktoken encodings + Hugging Face `tokenizer.json`, licenses
-permissive, pinned by commit/version). Catalog v1 is **16 families**;
-Qwen 2/2.5 is not Qwen3.
+permissive, pinned by commit/version). Catalog v1.1 is **18 families**;
+Qwen 2/2.5 is not Qwen 3.8; GLM-4 is not GLM-5.
 
 ```
 $ python3 -m tokwhois demo
 
 family      glm4-class     confidence (heuristic) 1.00  (L1 distance: 0)
-runner-up   cl100k_base    margin 35 tokens (L1)
+runner-up   glm5-class    margin 8 tokens (L1)
 
-probe          counted       glm4 cl100k_bas  internlm2 o200k_base
-cjk30               22         22         30         23         28
+probe          counted       glm4       glm5    qwen3_8 cl100k_bas
+cjk30               22         22         22         22         30
 space40              1          1          1          1          1
-digit64             43         43         22         32         22
-ascii100            26         26         26         27         26
-emoji8              21         21         21         29         13
+digit64             43         43         43         64         22
+ascii100            26         26         26         26         26
+emoji8              21         21         13         19         21
 hello_leadsp         1          1          1          1          1
 nl16                 1          1          1          1          1
 tab16                1          1          1          1          1
-cjk_en               8          8         12          8          8
+cjk_en               8          8          8          8         12
 im_start             6          6          6          1          6
-gmask                1          1          3          3          3
-eot                  1          1          1          7          1
+gmask                1          1          1          3          3
+eot                  1          1          1          1          1
 bot_llama            7          7          7          7          7
-byte_rare           22         22         22         24         23
+byte_rare           22         22         22         23         22
 ──────────────────────────────────────────────────────────────────
 offset (empty)      7   subtracted from every prompt count
 
-n=1 probe / string   K=1   catalog=v1   2026-08-24
-discriminating probes vs runner-up: cjk30, digit64, cjk_en, gmask
+n=1 probe / string   K=1   catalog=v1.1   Apache-2.0
+discriminating probes vs runner-up: emoji8
 ```
 
 It reports a **tokenizer family**, not a checkpoint, not a lab, not
@@ -70,7 +70,7 @@ probability.
 
 ---
 
-## Tokenizer Fertility Atlas (v1)
+## Tokenizer Fertility Atlas (v1.1)
 
 ![fingerprint](docs/fingerprint.svg)
 
@@ -103,7 +103,7 @@ and only used to rebuild the catalog or encode local files.
 python3 -m tokwhois demo
 ```
 
-This encodes the v1 probes against the embedded catalog, prints the vectors, and asserts
+This encodes the v1.1 probes against the embedded catalog, prints the vectors, and asserts
 that each family matches itself at $L_1 = 0$ and the others at $L_1 > 0$.
 If that assertion ever fails, the instrument is hollow — the
 selftest is written to fail on purpose when the catalog collides.

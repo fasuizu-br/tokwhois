@@ -55,11 +55,18 @@ def test_discriminating_probes_present():
     families = get_families(catalog)
 
     v_glm4 = families["glm4"]["vector"]
-    res = match_vector(v_glm4, catalog=catalog)
+    res_glm4 = match_vector(v_glm4, catalog=catalog)
 
-    assert len(res.discriminating_probes) > 0
-    # GLM4 vs cl100k differ on gmask, cjk30, digit64, etc.
-    assert "gmask" in res.discriminating_probes or "cjk30" in res.discriminating_probes
+    assert len(res_glm4.discriminating_probes) > 0
+    # In catalog v1.1, the runner-up for GLM-4 is GLM-5, differing specifically on emoji8 (21 vs 13)
+    assert "emoji8" in res_glm4.discriminating_probes
+
+    v_qwen = families["qwen2_5"]["vector"]
+    res_qwen = match_vector(v_qwen, catalog=catalog)
+    # Runner-up for Qwen 2.5 is Qwen 3.8, differing on cjk30, emoji8, byte_rare
+    assert "cjk30" in res_qwen.discriminating_probes
+    assert "emoji8" in res_qwen.discriminating_probes
+    assert "byte_rare" in res_qwen.discriminating_probes
 
 
 def test_to_dict_serialization():

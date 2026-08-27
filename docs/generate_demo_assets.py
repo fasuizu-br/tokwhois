@@ -42,7 +42,7 @@ CHAR_W = 7.82  # Menlo 13 width per character
 LINE_H = 19
 
 
-def create_base_canvas(title="tokwhois demo (offline · embedded catalog v1)"):
+def create_base_canvas(title="tokwhois demo (offline · embedded catalog v1.1)"):
     img = Image.new("RGB", (W, H), color=bg_color)
     draw = ImageDraw.Draw(img)
 
@@ -69,22 +69,22 @@ def create_base_canvas(title="tokwhois demo (offline · embedded catalog v1)"):
     return img, draw
 
 
-# Real probe table lines from tokwhois output
+# Real probe table lines from tokwhois output (v1.1)
 TABLE_ROWS = [
-    ("cjk30", "22", "22", "30", "23", "28"),
+    ("cjk30", "22", "22", "22", "22", "30"),
     ("space40", "1", "1", "1", "1", "1"),
-    ("digit64", "43", "43", "22", "32", "22"),
-    ("ascii100", "26", "26", "26", "27", "26"),
-    ("emoji8", "21", "21", "21", "29", "13"),
+    ("digit64", "43", "43", "43", "64", "22"),
+    ("ascii100", "26", "26", "26", "26", "26"),
+    ("emoji8", "21", "21", "13", "19", "21"),
     ("hello_leadsp", "1", "1", "1", "1", "1"),
     ("nl16", "1", "1", "1", "1", "1"),
     ("tab16", "1", "1", "1", "1", "1"),
-    ("cjk_en", "8", "8", "12", "8", "8"),
+    ("cjk_en", "8", "8", "8", "8", "12"),
     ("im_start", "6", "6", "6", "1", "6"),
-    ("gmask", "1", "1", "3", "3", "3"),
-    ("eot", "1", "1", "1", "7", "1"),
+    ("gmask", "1", "1", "1", "3", "3"),
+    ("eot", "1", "1", "1", "1", "1"),
     ("bot_llama", "7", "7", "7", "7", "7"),
-    ("byte_rare", "22", "22", "22", "24", "23"),
+    ("byte_rare", "22", "22", "22", "23", "22"),
 ]
 
 
@@ -116,7 +116,7 @@ def render_scene(
         banner_w = int(draw.textlength("tokwhois demo ", font=font_bold))
         draw.text(
             (x_left + banner_w, y),
-            "— running offline against embedded v1 catalog (zero network)",
+            "— running offline against embedded v1.1 catalog (zero network)",
             fill=text_dim,
             font=font_reg,
         )
@@ -144,31 +144,31 @@ def render_scene(
 
         # Verdict: Runner-up
         draw.text((x_left, y), "runner-up   ", fill=text_white, font=font_bold)
-        draw.text((x_left + int(12 * CHAR_W), y), "cl100k_base-class    ", fill=text_blue, font=font_reg)
+        draw.text((x_left + int(12 * CHAR_W), y), "glm5-class           ", fill=text_blue, font=font_reg)
         draw.text((x_left + int(33 * CHAR_W), y), "margin ", fill=text_dim, font=font_reg)
-        draw.text((x_left + int(40 * CHAR_W), y), "35 tokens (L1)", fill=text_white, font=font_reg)
+        draw.text((x_left + int(40 * CHAR_W), y), "8 tokens (L1)", fill=text_white, font=font_reg)
         y += LINE_H + 6
 
     if num_table_rows > 0:
         # Table Header
-        draw.text((x_left, y), "probe          counted       glm4 cl100k_bas  internlm2 o200k_base", fill=text_white, font=font_bold)
+        draw.text((x_left, y), "probe          counted       glm4       glm5    qwen3_8 cl100k_bas", fill=text_white, font=font_bold)
         y += LINE_H - 2
         draw.line([x_left, y - 2, x_left + int(66 * CHAR_W), y - 2], fill=divider_color, width=1)
 
         for i in range(min(num_table_rows, len(TABLE_ROWS))):
-            probe_name, counted, c_glm4, c_cl100k, c_intern, c_o200k = TABLE_ROWS[i]
+            probe_name, counted, c_glm4, c_glm5, c_qwen38, c_cl100k = TABLE_ROWS[i]
             # Probe name (col width 15)
             draw.text((x_left, y), f"{probe_name:<15}", fill=text_cyan, font=font_reg)
             # Counted (col width 8)
             draw.text((x_left + int(15 * CHAR_W), y), f"{counted:>7} ", fill=text_white, font=font_bold)
             # Match column: glm4 (col width 11)
             draw.text((x_left + int(24 * CHAR_W), y), f"{c_glm4:>10} ", fill=text_green, font=font_bold)
+            # glm5 (col width 11)
+            draw.text((x_left + int(35 * CHAR_W), y), f"{c_glm5:>10} ", fill=text_dim, font=font_reg)
+            # qwen3_8 (col width 11)
+            draw.text((x_left + int(46 * CHAR_W), y), f"{c_qwen38:>10} ", fill=text_dim, font=font_reg)
             # cl100k_bas (col width 11)
-            draw.text((x_left + int(36 * CHAR_W), y), f"{c_cl100k:>10} ", fill=text_dim, font=font_reg)
-            # internlm2 (col width 11)
-            draw.text((x_left + int(47 * CHAR_W), y), f"{c_intern:>10} ", fill=text_dim, font=font_reg)
-            # o200k_base (col width 11)
-            draw.text((x_left + int(58 * CHAR_W), y), f"{c_o200k:>10}", fill=text_dim, font=font_reg)
+            draw.text((x_left + int(57 * CHAR_W), y), f"{c_cl100k:>10}", fill=text_dim, font=font_reg)
             y += LINE_H
 
     if show_footer:
@@ -176,11 +176,11 @@ def render_scene(
         y += 8
         draw.text((x_left, y), "offset (empty)      7   subtracted from every prompt count", fill=text_mid, font=font_reg)
         y += LINE_H + 4
-        draw.text((x_left, y), "n=1 probe / string   K=1   catalog=v1   Apache-2.0", fill=text_dim, font=font_reg)
+        draw.text((x_left, y), "n=1 probe / string   K=1   catalog=v1.1   Apache-2.0", fill=text_dim, font=font_reg)
         y += LINE_H
         draw.text((x_left, y), "discriminating probes vs runner-up: ", fill=text_dim, font=font_reg)
         disc_w = int(draw.textlength("discriminating probes vs runner-up: ", font=font_reg))
-        draw.text((x_left + disc_w, y), "cjk30, digit64, cjk_en, gmask", fill=text_cyan, font=font_reg)
+        draw.text((x_left + disc_w, y), "emoji8", fill=text_cyan, font=font_reg)
         y += LINE_H + 8
 
     if show_final_prompt:

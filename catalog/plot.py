@@ -51,7 +51,7 @@ def generate_svg():
 
     svg_parts.append(f'<rect x="16" y="16" width="{width - 32}" height="{height - 32}" rx="12" fill="url(#cardGlow)" stroke="#334155" stroke-width="1.5" />')
     svg_parts.append('<text x="36" y="48" fill="#f8fafc" font-size="18" font-weight="700" letter-spacing="-0.02em">tokwhois — Tokenizer Fertility Atlas</text>')
-    svg_parts.append('<text x="36" y="68" fill="#94a3b8" font-size="12">Fixed 14-probe fertility fingerprint matrix across public tokenizer families (v1 catalog)</text>')
+    svg_parts.append('<text x="36" y="68" fill="#94a3b8" font-size="12">Fixed 14-probe fertility fingerprint matrix across public tokenizer families (v1.1 catalog)</text>')
 
     for j, p in enumerate(probes):
         cx = label_x_w + j * cell_w + cell_w // 2

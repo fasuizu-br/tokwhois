@@ -42,7 +42,7 @@ $$\mathbf{v} = (\hat{n}_1, \hat{n}_2, \ldots, \hat{n}_{14}) \in \mathbb{N}^{14}$
 
 ### 2.3 Catalog Matching via Manhattan ($L_1$) Distance
 
-Let $\mathcal{C} = \{(\mathbf{v}^{(k)}, \text{meta}^{(k)})\}_{k=1}^K$ be the catalog of $K$ public tokenizers evaluated offline against $\mathcal{S}$. Catalog v1 has $K=16$ families (e.g. `o200k_base`, `cl100k_base`, `llama3`, `qwen2_5`, `glm4`). `qwen2_5` is Qwen 2 / 2.5; it is not Qwen3.
+Let $\mathcal{C} = \{(\mathbf{v}^{(k)}, \text{meta}^{(k)})\}_{k=1}^K$ be the catalog of $K$ public tokenizers evaluated offline against $\mathcal{S}$. Catalog v1.1 has $K=18$ families (e.g. `o200k_base`, `cl100k_base`, `llama3`, `qwen2_5`, `qwen3_8`, `glm4`, `glm5`). `qwen2_5` is Qwen 2 / 2.5; `qwen3_8` is Qwen 3.8; `glm4` is GLM-4; `glm5` is GLM-5.
 
 The candidate ranking is ordered by Manhattan ($L_1$) distance:
 

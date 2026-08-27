@@ -8,10 +8,20 @@ This script:
 4. Writes catalog/v1.json and src/tokwhois/catalog/v1.json
 """
 
+import argparse
 import hashlib
 import json
+import os
 from pathlib import Path
 import sys
+
+try:
+    import tomllib
+except ImportError:
+    try:
+        import toml as tomllib
+    except ImportError:
+        tomllib = None
 
 # Probe definitions order
 PROBE_ORDER = [
@@ -46,22 +56,8 @@ def load_probes(probes_dir: Path):
     empty_hash = hashlib.sha256(empty_file.read_text(encoding="utf-8").encode("utf-8")).hexdigest() if empty_file.exists() else hashlib.sha256(b"").hexdigest()
     return probes, hashes, empty_hash
 
-def build_catalog():
-    catalog_dir = Path(__file__).resolve().parent
-    probes_dir = catalog_dir / "probes" / "v1"
-    probes, probe_hashes, empty_hash = load_probes(probes_dir)
-
-    print(f"Loaded {len(probes)} probes from {probes_dir}")
-
-    try:
-        import tiktoken
-        from tokenizers import Tokenizer
-    except ImportError as e:
-        print(f"Error: Missing required build dependencies (tiktoken, tokenizers): {e}", file=sys.stderr)
-        sys.exit(1)
-
-    # Family registry
-    families_config = {
+def get_default_families_config():
+    return {
         "o200k_base": {
             "display_name": "OpenAI o200k (GPT-4o / o1 / o3)",
             "backend": "tiktoken",
@@ -118,6 +114,14 @@ def build_catalog():
             "license": "Apache-2.0",
             "vocab_size": 151665,
         },
+        "qwen3_8": {
+            "display_name": "Alibaba Qwen 3.8 (248k)",
+            "backend": "hf",
+            "target": "Qwen/Qwen3.8-Flash-Next",
+            "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+            "license": "qwen-community-1.0",
+            "vocab_size": 248320,
+        },
         "glm4": {
             "display_name": "Zhipu GLM-4 (151k)",
             "backend": "hf",
@@ -125,6 +129,14 @@ def build_catalog():
             "source_url": "https://huggingface.co/THUDM/glm-4-9b",
             "license": "Apache-2.0",
             "vocab_size": 151343,
+        },
+        "glm5": {
+            "display_name": "Zhipu GLM-5 / 5.3 (155k)",
+            "backend": "hf",
+            "target": "zai-org/GLM-5.3-Flash",
+            "source_url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+            "license": "MIT",
+            "vocab_size": 154880,
         },
         "gemma": {
             "display_name": "Google Gemma 1 / Gemma 2 (256k)",
@@ -192,25 +204,145 @@ def build_catalog():
         },
     }
 
+def load_sources_toml(sources_file: Path):
+    if not sources_file.exists() or tomllib is None:
+        return None
+    try:
+        with open(sources_file, "rb" if hasattr(tomllib, "load") else "r", encoding=None if hasattr(tomllib, "load") else "utf-8") as f:
+            data = tomllib.load(f)
+            return data.get("families")
+    except Exception as exc:
+        print(f"Warning: could not parse {sources_file}: {exc}", file=sys.stderr)
+        return None
+
+def resolve_local_overrides(args_local: list[str] | None, local_dir: str | None, json_override: str | None) -> dict[str, Path]:
+    local_map: dict[str, Path] = {}
+
+    # 1. Environment variable TOKWHOIS_LOCAL_DIR
+    env_dir = os.environ.get("TOKWHOIS_LOCAL_DIR")
+    effective_dir = local_dir or env_dir
+    if effective_dir:
+        d = Path(effective_dir)
+        if d.is_dir():
+            for f in d.glob("*.tokenizer.json"):
+                stem = f.name.replace(".tokenizer.json", "")
+                local_map[stem.lower()] = f
+                # Also handle variations like GLM-5.3-Flash -> glm5
+                if "glm-5" in stem.lower() or "glm5" in stem.lower():
+                    local_map["glm5"] = f
+                if "qwen3.8" in stem.lower() or "qwen3_8" in stem.lower() or "qwen3" in stem.lower():
+                    local_map["qwen3_8"] = f
+
+    # 2. Environment variable TOKWHOIS_LOCAL_TOKENIZERS (JSON or key=val,key2=val)
+    env_toks = os.environ.get("TOKWHOIS_LOCAL_TOKENIZERS")
+    if env_toks:
+        try:
+            parsed = json.loads(env_toks)
+            if isinstance(parsed, dict):
+                for k, v in parsed.items():
+                    local_map[k] = Path(v)
+        except Exception:
+            for item in env_toks.split(","):
+                if "=" in item:
+                    k, v = item.split("=", 1)
+                    local_map[k.strip()] = Path(v.strip())
+
+    # 3. Specific environment variables TOKWHOIS_TOKENIZER_<FAM> or TOKWHOIS_LOCAL_<FAM>
+    for env_k, env_v in os.environ.items():
+        if env_k.startswith("TOKWHOIS_TOKENIZER_") or env_k.startswith("TOKWHOIS_LOCAL_"):
+            fam_key = env_k.split("_", 2)[-1].lower()
+            local_map[fam_key] = Path(env_v)
+
+    # 4. JSON file or string override
+    if json_override:
+        p = Path(json_override)
+        if p.is_file():
+            data = json.loads(p.read_text(encoding="utf-8"))
+        else:
+            data = json.loads(json_override)
+        if isinstance(data, dict):
+            for k, v in data.items():
+                local_map[k] = Path(v)
+
+    # 5. CLI --local arguments (format: fam=path)
+    if args_local:
+        for item in args_local:
+            if "=" in item:
+                k, v = item.split("=", 1)
+                local_map[k.strip()] = Path(v.strip())
+
+    return local_map
+
+def build_catalog(
+    local_overrides: dict[str, Path] | None = None,
+    output_version: str = "v1.1",
+    generated_date: str = "2026-08-27",
+):
+    catalog_dir = Path(__file__).resolve().parent
+    probes_dir = catalog_dir / "probes" / "v1"
+    probes, probe_hashes, empty_hash = load_probes(probes_dir)
+
+    print(f"Loaded {len(probes)} probes from {probes_dir}")
+
+    try:
+        import tiktoken
+        from tokenizers import Tokenizer
+    except ImportError as e:
+        print(f"Error: Missing required build dependencies (tiktoken, tokenizers): {e}", file=sys.stderr)
+        sys.exit(1)
+
+    # Load base family configurations
+    sources_toml = catalog_dir / "sources.toml"
+    toml_fams = load_sources_toml(sources_toml)
+    families_config = toml_fams if toml_fams is not None else get_default_families_config()
+
+    # Load existing catalog for fallback vectors if offline
+    existing_catalog_file = catalog_dir / "v1.json"
+    existing_vectors = {}
+    if existing_catalog_file.exists():
+        try:
+            with open(existing_catalog_file, "r", encoding="utf-8") as f:
+                ex_data = json.load(f)
+                for f_id, f_data in ex_data.get("families", {}).items():
+                    if "vector" in f_data:
+                        existing_vectors[f_id] = f_data["vector"]
+        except Exception:
+            pass
+
+    local_map = local_overrides or {}
     families_data = {}
 
     for fam_id, cfg in families_config.items():
         print(f"Encoding family: {fam_id} ({cfg['display_name']})...")
-        if cfg["backend"] == "tiktoken":
+        encode_fn = None
+
+        # Check local file override first
+        local_path = local_map.get(fam_id)
+        if local_path and Path(local_path).is_file():
+            print(f"  -> Using local tokenizer file for {fam_id}: {local_path}")
+            tok = Tokenizer.from_file(str(local_path))
+            encode_fn = lambda text, tok=tok: tok.encode(text, add_special_tokens=False).ids
+        elif cfg["backend"] == "tiktoken":
             enc = tiktoken.get_encoding(cfg["target"])
-            def encode_fn(text):
-                return enc.encode(text, allowed_special="all")
+            encode_fn = lambda text, enc=enc: enc.encode(text, allowed_special="all")
         elif cfg["backend"] == "hf":
-            tok = Tokenizer.from_pretrained(cfg["target"])
-            def encode_fn(text, tok=tok):
-                return tok.encode(text, add_special_tokens=False).ids
+            try:
+                tok = Tokenizer.from_pretrained(cfg["target"])
+                encode_fn = lambda text, tok=tok: tok.encode(text, add_special_tokens=False).ids
+            except Exception as hf_err:
+                if fam_id in existing_vectors:
+                    print(f"  -> Notice: from_pretrained({cfg['target']}) failed ({hf_err}), using pinned catalog vector for {fam_id}.")
+                    vector = existing_vectors[fam_id]
+                else:
+                    raise RuntimeError(f"Cannot encode {fam_id}: HF download failed and no local file/vector provided: {hf_err}")
         else:
             raise ValueError(f"Unknown backend: {cfg['backend']}")
 
-        vector = {}
-        for p_id in PROBE_ORDER:
-            token_ids = encode_fn(probes[p_id])
-            vector[p_id] = len(token_ids)
+        if encode_fn is not None:
+            vector = {}
+            for p_id in PROBE_ORDER:
+                token_ids = encode_fn(probes[p_id])
+                vector[p_id] = len(token_ids)
 
         families_data[fam_id] = {
             "display_name": cfg["display_name"],
@@ -244,11 +376,11 @@ def build_catalog():
         print(f"ERROR: Collisions detected between families: {collisions}", file=sys.stderr)
         sys.exit(1)
 
-    print(f"Validation passed! 0 collisions. Minimum pairwise L1 distance: {min_l1} between {closest[0]} and {closest[1]}")
+    print(f"Validation passed! 0 collisions across {len(fam_names)} families. Minimum pairwise L1 distance: {min_l1} between {closest[0]} and {closest[1]}")
 
     catalog = {
-        "version": "v1",
-        "generated_at": "2026-08-24",
+        "version": output_version,
+        "generated_at": generated_date,
         "probe_order": PROBE_ORDER,
         "probes": {
             p: {
@@ -275,5 +407,42 @@ def build_catalog():
         json.dump(catalog, f, indent=2, ensure_ascii=False)
     print(f"Wrote {pkg_out_json}")
 
+    return catalog
+
+def main():
+    parser = argparse.ArgumentParser(description="Build and validate public tokenizer catalog.")
+    parser.add_argument(
+        "--local",
+        action="append",
+        dest="local_overrides",
+        help="Local tokenizer override in format: <family_id>=<path_to_tokenizer.json>",
+    )
+    parser.add_argument(
+        "--local-dir",
+        help="Directory containing local *.tokenizer.json files",
+    )
+    parser.add_argument(
+        "--local-json",
+        help="JSON file or string with {family_id: path_to_tokenizer.json} mapping",
+    )
+    parser.add_argument(
+        "--version",
+        default="v1.1",
+        help="Catalog version string (default: v1.1)",
+    )
+    parser.add_argument(
+        "--date",
+        default="2026-08-27",
+        help="Catalog generation date (default: 2026-08-27)",
+    )
+    args = parser.parse_args()
+
+    local_overrides = resolve_local_overrides(args.local_overrides, args.local_dir, args.local_json)
+    build_catalog(
+        local_overrides=local_overrides,
+        output_version=args.version,
+        generated_date=args.date,
+    )
+
 if __name__ == "__main__":
-    build_catalog()
+    main()

@@ -2,8 +2,8 @@
 # All entries are derived strictly from publicly available tokenizer artifacts
 # under open / permissive licenses. Pinned by commit hash / encoding spec.
 
-version = "v1"
-date = "2026-08-24"
+version = "v1.1"
+date = "2026-08-27"
 
 [families.o200k_base]
 display_name = "OpenAI o200k (GPT-4o / o1 / o3)"
@@ -61,6 +61,14 @@ source_url = "https://huggingface.co/Qwen/Qwen2.5-7B"
 license = "Apache-2.0"
 vocab_size = 151665
 
+[families.qwen3_8]
+display_name = "Alibaba Qwen 3.8 (248k)"
+backend = "hf"
+target = "Qwen/Qwen3.8-Flash-Next"
+source_url = "https://huggingface.co/Qwen/Qwen3.8-Flash-Next"
+license = "qwen-community-1.0"
+vocab_size = 248320
+
 [families.glm4]
 display_name = "Zhipu GLM-4 (151k)"
 backend = "hf"
@@ -68,6 +76,14 @@ target = "THUDM/glm-4-9b-hf"
 source_url = "https://huggingface.co/THUDM/glm-4-9b"
 license = "Apache-2.0"
 vocab_size = 151343
+
+[families.glm5]
+display_name = "Zhipu GLM-5 / 5.3 (155k)"
+backend = "hf"
+target = "zai-org/GLM-5.3-Flash"
+source_url = "https://huggingface.co/zai-org/GLM-5.3-Flash"
+license = "MIT"
+vocab_size = 154880
 
 [families.gemma]
 display_name = "Google Gemma 1 / Gemma 2 (256k)"

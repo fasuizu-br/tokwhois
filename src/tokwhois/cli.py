@@ -26,7 +26,7 @@ def run_demo(json_output: bool = False) -> int:
     sample_vec = dict(families[demo_fam]["vector"])
 
     if not json_output:
-        print("\n\033[1m\033[38;5;45mtokwhois demo\033[0m — \033[2mrunning offline against embedded v1 catalog (zero network)\033[0m")
+        print("\n\033[1m\033[38;5;45mtokwhois demo\033[0m — \033[2mrunning offline against embedded v1.1 catalog (zero network)\033[0m")
         print("\033[38;5;244mSimulating live endpoint response for public tokenizer...\033[0m")
         time.sleep(0.3)
 

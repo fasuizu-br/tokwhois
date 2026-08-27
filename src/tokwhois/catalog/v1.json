@@ -1,6 +1,6 @@
 {
-  "version": "v1",
-  "generated_at": "2026-08-24",
+  "version": "v1.1",
+  "generated_at": "2026-08-27",
   "probe_order": [
     "cjk30",
     "space40",
@@ -245,6 +245,30 @@
         "byte_rare": 16
       }
     },
+    "qwen3_8": {
+      "display_name": "Alibaba Qwen 3.8 (248k)",
+      "backend": "hf",
+      "target": "Qwen/Qwen3.8-Flash-Next",
+      "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
+      "license": "qwen-community-1.0",
+      "vocab_size": 248320,
+      "vector": {
+        "cjk30": 22,
+        "space40": 1,
+        "digit64": 64,
+        "ascii100": 26,
+        "emoji8": 19,
+        "hello_leadsp": 1,
+        "nl16": 1,
+        "tab16": 1,
+        "cjk_en": 8,
+        "im_start": 1,
+        "gmask": 3,
+        "eot": 1,
+        "bot_llama": 7,
+        "byte_rare": 23
+      }
+    },
     "glm4": {
       "display_name": "Zhipu GLM-4 (151k)",
       "backend": "hf",
@@ -258,6 +282,30 @@
         "digit64": 43,
         "ascii100": 26,
         "emoji8": 21,
+        "hello_leadsp": 1,
+        "nl16": 1,
+        "tab16": 1,
+        "cjk_en": 8,
+        "im_start": 6,
+        "gmask": 1,
+        "eot": 1,
+        "bot_llama": 7,
+        "byte_rare": 22
+      }
+    },
+    "glm5": {
+      "display_name": "Zhipu GLM-5 / 5.3 (155k)",
+      "backend": "hf",
+      "target": "zai-org/GLM-5.3-Flash",
+      "source_url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
+      "license": "MIT",
+      "vocab_size": 154880,
+      "vector": {
+        "cjk30": 22,
+        "space40": 1,
+        "digit64": 43,
+        "ascii100": 26,
+        "emoji8": 13,
         "hello_leadsp": 1,
         "nl16": 1,
         "tab16": 1,
