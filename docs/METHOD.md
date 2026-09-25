@@ -4,7 +4,7 @@
 
 `tokwhois` identifies the tokenizer family of an unknown or stealth Large Language Model deployed behind an OpenAI-compatible API endpoint by measuring a 14-dimensional **fertility vector** through token billing counts.
 
-Because tokenizers are frozen before pretraining and labs almost universally reuse open, well-established tokenizers, the fertility response over fixed pathological strings forms a unique, collision-free fingerprint.
+Because tokenizers are frozen before pretraining and labs frequently reuse open, well-established tokenizers, the fertility response over fixed pathological strings is collision-free within catalog v1.1; the closest pairs differ on a single probe (in selftest: llama2 × phi3 has L1 distance 6 differing only on `eot`, and glm4 × glm5 has L1 distance 8 differing only on `emoji8`).
 
 ---
 
@@ -62,12 +62,12 @@ $$\Delta = D_1(\mathbf{v}, \mathbf{v}^{(\hat{k}_2)}) - D_1(\mathbf{v}, \mathbf{v
 
 ### 3.1 Ambiguity Condition
 
-A classification is declared **ambiguous** if:
+In `match.py`, the classification rule reports the nearest family unless the margin is under 2 or the distance is 20 or more. A classification is declared **ambiguous** if:
 
 1. $\Delta < \Delta_{\text{threshold}}$ (default $\Delta_{\text{threshold}} = 2$), OR
 2. $D_1(\mathbf{v}, \mathbf{v}^{(\hat{k}_1)}) \ge 20$ (indicating an unfamiliar or novel tokenizer family not present in the catalog).
 
-When ambiguous, `tokwhois` refuses to guess a single lab or family, outputting the tied candidates and the exact discriminating probes that separate them.
+When ambiguous, `tokwhois` refuses to guess a single lab or family, outputting the candidate rankings and the exact discriminating probes that separate them.
 
 ### 3.2 Fail-Closed Invariants
 

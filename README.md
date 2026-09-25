@@ -22,16 +22,16 @@ uvx --from git+https://github.com/fasuizu-br/tokwhois tokwhois https://api.examp
 [![License](https://img.shields.io/badge/License-Apache_2.0-blue.svg)](LICENSE)
 
 ![demo](docs/demo.gif)
+*rendered from docs/generate_demo_assets.py (offline demo)*
 
 ---
 
-## What you get in 12 seconds
+## What you get
 
 A 14-integer **fertility vector**. Each probe is a fixed, versioned string. The
 server returns `usage.prompt_tokens` for a 1-token completion. That
 integer is compared to a catalog of **public** tokenizers
-(tiktoken encodings + Hugging Face `tokenizer.json`, licenses
-permissive, pinned by commit/version). Catalog v1.1 is **18 families**;
+(tiktoken encodings + Hugging Face `tokenizer.json`, public tokenizer artifacts under their own licenses (listed per family in catalog/v1.json); vectors computed from the named repos on 2026-08-27). Catalog v1.1 is **18 families**;
 Qwen 2/2.5 is not Qwen 3.8; GLM-4 is not GLM-5.
 
 ```
@@ -63,8 +63,9 @@ discriminating probes vs runner-up: emoji8
 ```
 
 It reports a **tokenizer family**, not a checkpoint, not a lab, not
-a parameter count. If the top two families land inside the margin,
-it prints `ambiguous` and stops. It does not guess. `confidence` in
+a parameter count. If the top two families are closer than the
+margin, or the nearest one is too far away, it prints `ambiguous`
+instead of a family. `confidence` in
 the output is a **heuristic** score of L1 distance and margin, not a
 probability.
 
@@ -97,16 +98,16 @@ and only used to rebuild the catalog or encode local files.
 
 ## 5-Minute Path
 
-### 1. Offline (no API key, no network)
+### 1. Offline (no API key; zero network for offline demo)
 
 ```bash
 python3 -m tokwhois demo
 ```
 
-This encodes the v1.1 probes against the embedded catalog, prints the vectors, and asserts
-that each family matches itself at $L_1 = 0$ and the others at $L_1 > 0$.
-If that assertion ever fails, the instrument is hollow — the
-selftest is written to fail on purpose when the catalog collides.
+This replays one catalog vector (glm4) through a simulated endpoint with a
+7-token offset and prints the match, all offline. `python3 -m tokwhois --selftest`
+checks that each of the 18 families matches itself at $L_1 = 0$ and the others
+at $L_1 > 0$; it is written to fail on purpose if the catalog ever collides.
 
 ### 2. Live (any OpenAI-compatible endpoint)
 
@@ -115,7 +116,7 @@ export OPENAI_API_KEY=...
 python3 -m tokwhois "$OPENAI_BASE_URL" --model "$MODEL"
 ```
 
-Fourteen `max_tokens=1` calls. Fail-closed if `usage.prompt_tokens`
+15 one-token calls (14 probes plus an empty-prompt offset). Fail-closed if `usage.prompt_tokens`
 is missing. Chat-template framing overhead is subtracted via an empty probe
 so the live vector can be compared to the local catalog. That comparison
 is a working hypothesis (BPE is not addition; see [METHOD.md](docs/METHOD.md)).

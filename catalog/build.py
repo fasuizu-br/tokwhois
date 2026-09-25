@@ -94,6 +94,7 @@ def get_default_families_config():
             "display_name": "Meta Llama 3 / 3.1 / 3.2 / 3.3 (128k)",
             "backend": "hf",
             "target": "unsloth/llama-3-8b",
+            "revision": "b0c09b815d8a74b70622c740f108c995c5041a14",
             "source_url": "https://huggingface.co/meta-llama/Meta-Llama-3-8B",
             "license": "Llama 3 Community License",
             "vocab_size": 128256,
@@ -102,14 +103,16 @@ def get_default_families_config():
             "display_name": "Meta Llama 2 / CodeLlama (32k)",
             "backend": "hf",
             "target": "huggyllama/llama-7b",
+            "revision": "4782ad278652c7c71b72204d462d6d01eaaf7549",
             "source_url": "https://huggingface.co/meta-llama/Llama-2-7b-hf",
-            "license": "Llama 2 Community License",
+            "license": "LLaMA license (huggyllama mirror of LLaMA 1, non-commercial); tokenizer identical to Llama 2",
             "vocab_size": 32000,
         },
         "qwen2_5": {
             "display_name": "Alibaba Qwen 2 / 2.5 (151k)",
             "backend": "hf",
             "target": "Qwen/Qwen2.5-7B",
+            "revision": "d149729398750b98c0af14eb82c78cfe92750796",
             "source_url": "https://huggingface.co/Qwen/Qwen2.5-7B",
             "license": "Apache-2.0",
             "vocab_size": 151665,
@@ -118,6 +121,7 @@ def get_default_families_config():
             "display_name": "Alibaba Qwen 3.8 (248k)",
             "backend": "hf",
             "target": "Qwen/Qwen3.8-Flash-Next",
+            "revision": "de4b8e4d43b917e7706784d8bb445c9af86a3540",
             "source_url": "https://huggingface.co/Qwen/Qwen3.8-Flash-Next",
             "license": "qwen-community-1.0",
             "vocab_size": 248320,
@@ -126,14 +130,16 @@ def get_default_families_config():
             "display_name": "Zhipu GLM-4 (151k)",
             "backend": "hf",
             "target": "THUDM/glm-4-9b-hf",
+            "revision": "b44e98fcc8df0faba03a48b405356af6b91821e7",
             "source_url": "https://huggingface.co/THUDM/glm-4-9b",
-            "license": "Apache-2.0",
+            "license": "glm-4 license (custom; see the model repository)",
             "vocab_size": 151343,
         },
         "glm5": {
             "display_name": "Zhipu GLM-5 / 5.3 (155k)",
             "backend": "hf",
             "target": "zai-org/GLM-5.3-Flash",
+            "revision": "eb9eb208eb0d988989d07a6a12d0fdeb5f52574a",
             "source_url": "https://huggingface.co/zai-org/GLM-5.3-Flash",
             "license": "MIT",
             "vocab_size": 154880,
@@ -142,6 +148,7 @@ def get_default_families_config():
             "display_name": "Google Gemma 1 / Gemma 2 (256k)",
             "backend": "hf",
             "target": "unsloth/gemma-2-9b",
+            "revision": "9145841c83add11c48155cd7bb87d8656703f997",
             "source_url": "https://huggingface.co/google/gemma-2-9b",
             "license": "Gemma Terms of Use",
             "vocab_size": 256000,
@@ -150,6 +157,7 @@ def get_default_families_config():
             "display_name": "DeepSeek V2 (100k)",
             "backend": "hf",
             "target": "deepseek-ai/DeepSeek-V2-Lite",
+            "revision": "604d5664dddd88a0433dbae533b7fe9472482de0",
             "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V2-Lite",
             "license": "DeepSeek License",
             "vocab_size": 100002,
@@ -158,14 +166,16 @@ def get_default_families_config():
             "display_name": "DeepSeek V3 / R1 (128k)",
             "backend": "hf",
             "target": "deepseek-ai/DeepSeek-V3",
+            "revision": "e815299b0bcbac849fa540c768ef21845365c9eb",
             "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
-            "license": "MIT",
+            "license": "DeepSeek Model License (code: MIT)",
             "vocab_size": 128815,
         },
         "mistral_v3": {
             "display_name": "Mistral v0.3 / Tekken (32k)",
             "backend": "hf",
             "target": "mistralai/Mistral-7B-v0.3",
+            "revision": "caa1feb0e54d415e2df31207e5f4e273e33509b1",
             "source_url": "https://huggingface.co/mistralai/Mistral-7B-v0.3",
             "license": "Apache-2.0",
             "vocab_size": 32768,
@@ -174,6 +184,7 @@ def get_default_families_config():
             "display_name": "01-ai Yi 1.0 / 1.5 (64k)",
             "backend": "hf",
             "target": "01-ai/Yi-1.5-9B",
+            "revision": "80d5471b1eae28beae33e06eadbd4b48e74d4ce1",
             "source_url": "https://huggingface.co/01-ai/Yi-1.5-9B",
             "license": "Apache-2.0",
             "vocab_size": 63992,
@@ -182,6 +193,7 @@ def get_default_families_config():
             "display_name": "Microsoft Phi-3 / 3.5 (32k)",
             "backend": "hf",
             "target": "microsoft/Phi-3-mini-4k-instruct",
+            "revision": "f39ac1d28e925b323eae81227eaba4464caced4e",
             "source_url": "https://huggingface.co/microsoft/Phi-3-mini-4k-instruct",
             "license": "MIT",
             "vocab_size": 32011,
@@ -190,14 +202,16 @@ def get_default_families_config():
             "display_name": "Shanghai AI Lab InternLM 2 / 2.5 (92k)",
             "backend": "hf",
             "target": "internlm/internlm2_5-7b",
+            "revision": "0481d88c24f938d97226eb8556cf1de89ba60772",
             "source_url": "https://huggingface.co/internlm/internlm2_5-7b",
-            "license": "Apache-2.0",
+            "license": "InternLM model terms (code: Apache-2.0; commercial use on application)",
             "vocab_size": 92544,
         },
         "starcoder2": {
             "display_name": "BigCode StarCoder 2 (49k)",
             "backend": "hf",
             "target": "bigcode/starcoder2-15b",
+            "revision": "46d44742909c03ac8cee08eb03fdebce02e193ec",
             "source_url": "https://huggingface.co/bigcode/starcoder2-15b",
             "license": "BigCode OpenRAIL-M",
             "vocab_size": 49152,
@@ -296,19 +310,6 @@ def build_catalog(
     toml_fams = load_sources_toml(sources_toml)
     families_config = toml_fams if toml_fams is not None else get_default_families_config()
 
-    # Load existing catalog for fallback vectors if offline
-    existing_catalog_file = catalog_dir / "v1.json"
-    existing_vectors = {}
-    if existing_catalog_file.exists():
-        try:
-            with open(existing_catalog_file, "r", encoding="utf-8") as f:
-                ex_data = json.load(f)
-                for f_id, f_data in ex_data.get("families", {}).items():
-                    if "vector" in f_data:
-                        existing_vectors[f_id] = f_data["vector"]
-        except Exception:
-            pass
-
     local_map = local_overrides or {}
     families_data = {}
 
@@ -326,15 +327,18 @@ def build_catalog(
             enc = tiktoken.get_encoding(cfg["target"])
             encode_fn = lambda text, enc=enc: enc.encode(text, allowed_special="all")
         elif cfg["backend"] == "hf":
+            revision = cfg.get("revision")
             try:
-                tok = Tokenizer.from_pretrained(cfg["target"])
+                kwargs = {}
+                if revision:
+                    kwargs["revision"] = revision
+                tok = Tokenizer.from_pretrained(cfg["target"], **kwargs)
                 encode_fn = lambda text, tok=tok: tok.encode(text, add_special_tokens=False).ids
             except Exception as hf_err:
-                if fam_id in existing_vectors:
-                    print(f"  -> Notice: from_pretrained({cfg['target']}) failed ({hf_err}), using pinned catalog vector for {fam_id}.")
-                    vector = existing_vectors[fam_id]
-                else:
-                    raise RuntimeError(f"Cannot encode {fam_id}: HF download failed and no local file/vector provided: {hf_err}")
+                rev_info = f" (revision {revision})" if revision else ""
+                raise RuntimeError(
+                    f"Cannot encode family '{fam_id}': HF download failed for target '{cfg['target']}'{rev_info}: {hf_err}"
+                ) from hf_err
         else:
             raise ValueError(f"Unknown backend: {cfg['backend']}")
 
@@ -353,6 +357,8 @@ def build_catalog(
             "vocab_size": cfg["vocab_size"],
             "vector": vector,
         }
+        if "revision" in cfg:
+            families_data[fam_id]["revision"] = cfg["revision"]
 
     # Verify no collisions (pairwise L1 > 0)
     fam_names = list(families_data.keys())

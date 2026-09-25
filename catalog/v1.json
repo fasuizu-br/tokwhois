@@ -202,7 +202,7 @@
       "backend": "hf",
       "target": "huggyllama/llama-7b",
       "source_url": "https://huggingface.co/meta-llama/Llama-2-7b-hf",
-      "license": "Llama 2 Community License",
+      "license": "LLaMA license (huggyllama mirror of LLaMA 1, non-commercial); tokenizer identical to Llama 2",
       "vocab_size": 32000,
       "vector": {
         "cjk30": 31,
@@ -274,7 +274,7 @@
       "backend": "hf",
       "target": "THUDM/glm-4-9b-hf",
       "source_url": "https://huggingface.co/THUDM/glm-4-9b",
-      "license": "Apache-2.0",
+      "license": "glm-4 license (custom; see the model repository)",
       "vocab_size": 151343,
       "vector": {
         "cjk30": 22,
@@ -370,7 +370,7 @@
       "backend": "hf",
       "target": "deepseek-ai/DeepSeek-V3",
       "source_url": "https://huggingface.co/deepseek-ai/DeepSeek-V3",
-      "license": "MIT",
+      "license": "DeepSeek Model License (code: MIT)",
       "vocab_size": 128815,
       "vector": {
         "cjk30": 22,
@@ -466,7 +466,7 @@
       "backend": "hf",
       "target": "internlm/internlm2_5-7b",
       "source_url": "https://huggingface.co/internlm/internlm2_5-7b",
-      "license": "Apache-2.0",
+      "license": "InternLM model terms (code: Apache-2.0; commercial use on application)",
       "vocab_size": 92544,
       "vector": {
         "cjk30": 23,
